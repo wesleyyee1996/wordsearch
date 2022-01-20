@@ -82,14 +82,21 @@ def do_word_search():
                 word_set = input("Input board: ")
                 wordsearch = WordSearch(word_set)
 
+                start = time.time()
+
                 i = 0
                 for word in wordsearch.find_words(root_trie):
                     i += 1
-                    if i == 10:
+                    if time.time() - start > 180:
                         break
                     print("Writing word " + word.word + " at path: " + str(word.path))
-                    for pos in word.path:
-                        move.to_with_transform(pos)
+                    for j in range(len(word.path)):
+                        if j == 1:
+                            move.move_z(False)
+                            time.sleep(0.4)
+                        move.to_with_transform(word.path[j])
+                    move.move_z(True)
+                    time.sleep(0.4)
 
             except ValueError:
                 print("The inputted board was invalid: " + word_set)

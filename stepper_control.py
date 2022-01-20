@@ -1,6 +1,7 @@
 import time
 import board
 import digitalio
+import pwmio
 import keyboard
 
 class StepperControl:
@@ -33,6 +34,8 @@ class StepperControl:
         self.limit_y_2_pin.direction = digitalio.Direction.INPUT
         self.limit_x_1_pin.direction = digitalio.Direction.INPUT
         self.limit_x_2_pin.direction = digitalio.Direction.INPUT
+
+        self.servo_pin = pwmio.PWMOut(board.D15, frequency=50) #pin 10
 
     def left(self,delay,steps):
         """
@@ -73,11 +76,11 @@ class StepperControl:
         self.setLRStep(0,0,0,0)
         return i
 
-    def up(self,delay,steps):
+    def down(self,delay,steps):
         i = 0
         delay = delay/1000.0
         while i in range(0, steps):
-            if self.limit_y_1_pin.value:
+            if self.limit_y_2_pin.value:
                 break
             self.setUDStep(1,1,0,0)
             time.sleep(delay)
@@ -92,11 +95,11 @@ class StepperControl:
         self.setUDStep(0,0,0,0)
         return i
 
-    def down(self,delay,steps):
+    def up(self,delay,steps):
         i = 0
         delay = delay/1000.0
         while i in range(0, steps): 
-            if self.limit_y_2_pin.value:
+            if self.limit_y_1_pin.value:
                 break
             self.setUDStep(1,0,0,1)
             time.sleep(delay)
@@ -121,6 +124,9 @@ class StepperControl:
         self.coil_C_grn_ud_pin.value = C
         self.coil_B_red_ud_pin.value = B
         self.coil_D_blu_ud_pin.value = D
+
+    def servo(self, duty):
+        self.servo_pin.duty_cycle = duty*65535/100
 
 """
 user_delay = 1
